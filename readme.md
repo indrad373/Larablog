@@ -101,7 +101,7 @@ pada admin/category/create.blade.php, tambahkan href route pada button edit :
 	
 
 pada CategoryController bagian edit, tambah :
-	//dapatkan dayanya dulu
+	    //dapatkan dayanya dulu
         $category = Category::findorfail($id);
         return view('admin.category.edit', compact('category'));
 	
@@ -116,7 +116,7 @@ Ubah route('category.store') menjadi route('category.update', $category->id)
 Lalu dibawah @csrf tambahkan @method('patch')
 	
 Pada CategoryController, dibagian function update :
-	//validasi dulu
+	    <!-- validasi dulu -->
         $this->validate($request, [
             //tulis apa sih request kita
             'name' => 'required',
@@ -137,7 +137,7 @@ Pada CategoryController, dibagian function update :
 ---------------------------------------------------------DELETE DATA KATEGORI----------------------------------------------------------
 
 Ubah anchor (<a>) delete pada admin/category/index.blade.php menjadi <button>, lalu tambahkan <form></form> :
-	<!-- Kenapa pake form disini ? karena kita akan langsung request ke database makanya pake form, kalo yg edit ga pake form karena cuma menampilkan, meskipun sama2 request langusng ke database sih -->
+	    <!-- Kenapa pake form disini ? karena kita akan langsung request ke database makanya pake form, kalo yg edit ga pake form karena cuma menampilkan, meskipun sama2 request langusng ke database sih -->
         <form action="{{ route('category.destroy', $hasil->id) }}" method="POST">
         	@csrf
         	@method('delete')
@@ -145,13 +145,13 @@ Ubah anchor (<a>) delete pada admin/category/index.blade.php menjadi <button>, l
         </form>
         
 Lalu ubah posisi edit agar dimasukan juga kedalam tag form :), btw form actionnya ga akan ngaruh apa2 ke yg editnya kok
-	<form action="{{ route('category.destroy', $hasil->id) }}" method="POST">
+	    <form action="{{ route('category.destroy', $hasil->id) }}" method="POST">
                 @csrf
                 @method('delete')
                 <!-- btn-sm membuat button yang ukurannya lebih kecil-->
                 <a href="{{ route('category.edit', $hasil->id) }}" class="btn btn-primary btn-sm">Edit</a>
                 <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-       </form>
+        </form>
        
 Pada CategoryController, pada function destroy :
 	//buat var, suruh cari id nya
