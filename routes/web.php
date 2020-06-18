@@ -27,3 +27,4 @@ Route::get('/home', function () {
     disediakan oleh laravel itu sendiri
 */
 Route::resource('/category','CategoryController');
+Route::resource('/tag', 'TagController');
