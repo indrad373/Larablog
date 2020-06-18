@@ -269,9 +269,9 @@
     return view('admin.tag.index');
     
     
-- Buat sebuah file baru di folder /admin
+- Buat sebuah file baru di folder /admin -> index
 
-- Copy semua dr folder /admin/category/index.blade.php ke /admin/tag/index.blade.php, lalu ubah sedikit dr category ke tag
+- Copy semua dr folder /admin/category/index.blade.php ke /admin/post/index.blade.php, lalu ubah sedikit dr category ke tag
 
 - Pada folder TagController bagian index, tambahkan variabel tag (sama kaya category) :
 
@@ -279,12 +279,12 @@
     public function index()
         {
             //kita tambah sebuah variabel yang akan memanggil semua data dari category model
-            //$tag = Category::all();
+            //$tag = Posts::all();
     
-            $tag = Tag::paginate(10);
+            $tag = Posts::paginate(10);
     
-            //return sebuah view yang merujuk pada sebuah folder /admin/tag/index.blade.php
-            return view('admin.tag.index', compact('tag'));
+            //return sebuah view yang merujuk pada sebuah folder /admin/post/index.blade.php
+            return view('admin.post.index', compact('tag'));
         }
     
     
@@ -332,7 +332,6 @@
     $tag = Tag::findorfail($id);
     return view('admin.tag.edit', compact('tag'));
     
-    
 - Pada admin/tag/ buat file edit.blade.php lalu copy file edit yang ada di folder category, lalu ubah kata kategori menjadi tag
 
 - Pada TagController bagian update tambahkan :
@@ -369,3 +368,142 @@
     return redirect()->back()->with('success', 'Data Berhasil dihapus');
     
 ----------------------------------------------- CRUD POST ----------------------------------------------
+
+- Buat model post baru ketikan diterminal :
+    
+    
+    php artisan make:model Posts -m
+
+- Pada migration posts table tambahkan :
+
+
+    public function up()
+        {
+            Schema::create('posts', function (Blueprint $table) {
+                $table->id();
+                $table->string('judul');
+                $table->integer('category_id');
+                $table->text('content');
+                $table->string('gambar');
+                $table->timestamps();
+            });
+        }
+
+- Pada terminal ketikan php artisan migrate :
+    
+        
+     php artisan migrate
+     
+- Pada template backend sidebar.blade.php, copy menu dropdown kategori lalu ubah menjadi post :
+      
+      
+      <form>
+      <li class="dropdown">
+          <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fas fa-columns"></i> <span>Post</span></a>
+          <ul class="dropdown-menu">
+              <li><a class="nav-link" href={{ route('post.index') }}>List Post</a></li>
+          </ul>
+      </li>
+      </form>
+
+- Buat controller untuk mengeluarkan data post yang ada di database :
+
+    
+    php artisan make:controller PostController --resource
+
+- Pada web.php tambahkan route baru untuk mengakses controllernya :
+
+    
+    Route::resource('/tag', 'PostController');
+    
+- Jalankan command pada terminal, untuk melihat route list yang dapat digunakan :
+
+    
+    php artisan route:list  
+
+- Pada TagController dibagian index ketikan :
+
+    
+    //return sebuah view yang merujuk pada sebuah folder /admin/tag/index.blade.php
+    return view('admin.post.index');
+    
+    
+- Buat sebuah file baru di folder /admin
+    
+    
+    //kita tambah sebuah variabel yang akan memanggil semua data dari category model
+    //$tag = Posts::all();
+    
+    $post = Posts::paginate(10);
+    
+    //return sebuah view yang merujuk pada sebuah folder /admin/post/index.blade.php
+    return view('admin.post.index', compact('post'));
+            
+- kemudian kita akan buat eloquent relationship, pada model Posts kita ketikan :
+
+
+        public function category(){
+                return $this->belongsTo('App\Category');
+        }
+        
+- Lalu ada sedikit perubahan di /admin/post/index.blade.php nya, lihat sendiri males ngetik :)
+
+- Pada file TagController bagian create (sama kaya tag) :
+    
+    
+    //buat return
+    return view('admin.post.create');
+    
+    
+- Buat file create.blade.php pada /admin/post
+
+- Lalu copy2 seperti biasa kemudian modifikasi
+
+- Pada PostController tambah script :
+
+
+    //buat var untuk mengambil data dari model Category
+    $category = Category::all();
+    return view('admin.post.create', compact('category'));
+    
+- Pada file TagController bagian create (sama kaya category) :
+
+
+            //tambah validasi jika data ksong muncul pesan tidak boleh kosong (required)
+            $this->validate($request, [
+                'judul' => 'required',
+                'category_id' => 'required',
+                'konten' => 'required',
+                'gambar' => 'required'
+            ]);
+            
+            //kalo gambar kan data yg kita upload terpisah yg 1 diproject directory kita yg 1 itu di path yg ada di field table kita
+            //jadi hrs gini
+            $gambar = $request->gambar;
+            //buat nama gambar jadi unique 
+            $new_gambar = time().$gambar->getClientOriginalName();
+            
+            $post = Posts::create([
+                'judul' => $request->judul,
+                'category_id' => $request->category_id,
+                'content' => $request->konten,
+                'gambar' => 'public/uploads/posts/'.$new_gambar
+            ]);
+            
+            $gambar->move('public/uploads/posts/', $new_gambar);
+            
+            //jika sudah berhasil kita redirect
+            return redirect()->back()->with('success', 'Postingan anda berhasil disimpan');
+
+- Pada Post model tambahkan : 
+  
+      
+      //buat fillablenya
+          protected $fillable = [
+              'judul',
+              'category_id',
+              'konten',
+              'gambar',
+          ];
+
+
