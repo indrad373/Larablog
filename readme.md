@@ -100,13 +100,11 @@
             </div>
         @endforeach
     @endif
-    
     	
 - Pada CategoryController, tambah with untuk mengeluarkan flash data berhasil disimpan :
 	
 	
 	return redirect()->back()->with('success','Kategori berhasil disimpan');
-	
 	
 - pada admin/category/create.blade.php, buat sebuah kondisi jika data berhasil dimasukan maka akan mengeluarkan flash berhasil	
     
@@ -124,14 +122,12 @@
 	
 	<a href="{{ route('category.edit', $hasil->id) }}" class="btn btn-primary btn-sm">Edit</a>
 	
-
 - pada CategoryController bagian edit, tambah :
 	
 	
 	    //dapatkan dayanya dulu
         $category = Category::findorfail($id);
         return view('admin.category.edit', compact('category'));
-	
 	
 - Buat file edit.blade.php pada /admin/category/ lalu copy semua yang ada di create.blade.php ke edit.blade.php dan ganti sub-judul
 
@@ -140,7 +136,6 @@
         
         <input type="text" class="form-control" name="name" value="{{ $category->name }}">
 
-	
 - Ubah route('category.store') menjadi route('category.update', $category->id)
 
 - Lalu dibawah @csrf tambahkan @method('patch')
@@ -165,7 +160,6 @@
         
         //return dan redirect ke sebuah route
         return redirect()->route('category.index')->with('success', 'Data Berhasil di Update');
-
         
 ---------------------------------------------------------DELETE DATA KATEGORI----------------------------------------------------------
 
@@ -208,20 +202,20 @@
 - Pada template backend sidebar.blade.php, copy menu dropdown kategori lalu ubah menjadi tag :
     
     
+    <form>
     <li class="dropdown">
         <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fas fa-columns"></i> <span>Tag</span></a>
         <ul class="dropdown-menu">
             <li><a class="nav-link" href={{ route('category.index') }}>List Tag</a></li>
         </ul>
     </li>
-    
+    </form>
     
 - Kemudian buat model untuk tag pada terminal ketikan :
     
     
     php artisan make:model Tags -m
     <!-- -m berarti kita buat model sekaligus dimigrasi -->
-
 
 - Lalu pada file tags migrationnya pada function up table yang akan dibuat, kita tambahkan :
     
@@ -236,12 +230,10 @@
             });
         }
 
-
 - Pada terminal ketikan, php artisan migrate untuk memigrasi table tags yang kita buat di laravel ke mysql database :
 
 
     php artisan migrate
-    
     
 - Lalu tambahkan data secara manual pada database table tags, lalu kita memperoleh data yang telah secara manual kita tambahkan pada tabel tags
 
@@ -249,7 +241,6 @@
 
     
     php artisan make:controller TagController --resource
-
 
 - Pada web.php tambahkan route baru untuk mengakses controllernya :
 
@@ -259,8 +250,7 @@
 - Jalankan command pada terminal, untuk melihat route list yang dapat digunakan :
 
     
-    php artisan route:list
-    
+    php artisan route:list    
     
 - Untuk menampilkan data kita perlu route tag.index, pergi ke sidebar.blade.php lalu ubah :
 
@@ -271,7 +261,7 @@
     
     <li><a class="nav-link" href={{ route('tag.index') }}>List Kategori</a></li>
 
-    
+
 - Pada TagController dibagian index ketikan :
 
     
@@ -377,3 +367,5 @@
     
     //return dan redirect back
     return redirect()->back()->with('success', 'Data Berhasil dihapus');
+    
+----------------------------------------------- CRUD POST ----------------------------------------------
