@@ -524,4 +524,59 @@
 
 - modif dikit diPostController, tambahin slug lalu di modelnya tambah juga slug dibagian fillable nya
 
-- kemudian kita akan menampilkan gambar yang sudah dipost di database, buka /admin/post/index.blade.phpnya
+- kemudian kita akan menampilkan gambar yang sudah dipost di database, buka /admin/post/index.blade.phpnya lalu ubah dikit
+
+----------------------------------------------- TAGS MANY TO MANY ------------------------------------------------
+
+- pada model Posts tambah function baru bernama tags pakai method belongsToMany, begitu pula pada model . Jadi post kita ini bisa dimiliki banyak tags dan tags bisa dimiliki oleh banyak post
+
+- buat pivot title, sebelumnya buat dulu relationnya buat table sendiri khusus relation post dan tag, buka terminal :
+
+     
+     php artisan make:migration create_post_tag_table
+
+- Pada migration yang sudah dibuat tambahkan :
+
+
+    public function up()
+        {
+            Schema::create('post_tag', function (Blueprint $table) {
+                $table->id();
+                $table->integer('post_id');
+                $table->integer('tag_id');
+                $table->timestamps();
+            });
+        }
+    
+- Lalu pada terminal ketikan php artisan migrate, untuk memigrasi relasi table post_tag yang telah dibuat
+
+- pada post index.blade.php kita tambahkan inputan berupa multiple, importkan js dan css file dari templatenya select2 js dan select2 css kemudian copykan
+
+- Pada PostController dibagian create kita buat var baru untuk membuat pilihan tag di index.blade.php menjadi dinamis
+
+
+    public function create()
+        {
+            //buat var unutk mengambil data dari model tag
+            $tag = Tag::all();
+            //buat var untuk mengambil data dari model Category
+            $category = Category::all();
+            return view('admin.post.create', compact('category', 'tag'));
+        }
+        
+- Lakukan foreach di index.blade.php nya
+
+- Sekarang kita ingin melakukan penyimpanan si select multiple itu td, pergi ke PostController lalu tambahkan :
+
+    
+    //attach tagnya buat penyimpanan muliple
+    $post->tags()->attach($request->tags);
+
+- Lalu dibagian post index.blade.php kita akan keluarkan tags nya
+
+
+
+
+
+
+

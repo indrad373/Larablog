@@ -19,4 +19,9 @@ class Posts extends Model
     public function category(){
         return $this->belongsTo('App\Category');
     }
+
+    //buat eloquent many to many ke model tag nya
+    public function tags(){
+        return $this->belongsToMany('App\Tag');
+    }
 }

@@ -29,6 +29,8 @@
             <th>No</th>
             <th>Nama Post</th>
             <th>Kategori</th>
+            <th>Tag</th>
+            <th>Gambar</th>
             <th>Action</th>
         </tr>
         </thead>
@@ -38,6 +40,13 @@
                 <td>{{ $result + $post->firstitem() }}</td>
                 <td>{{ $hasil->judul }}</td>
                 <td>{{ $hasil->category->name }}</td> <!-- $hasil->category->nama_field_ditable_category -->
+                <td>
+                    @foreach($hasil->tags as $tag)
+                        <ul>
+                            <li>{{ $tag->name }}</li>
+                        </ul>
+                    @endforeach
+                </td>
                 <td><img src="{{ asset($hasil->gambar) }}" class="img-fluid" style="width: 100px"></td>
                 <td>
                     <!-- Kenapa pake form disini ? karena kita akan langsung request ke database makanya pake form -->
