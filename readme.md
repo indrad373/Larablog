@@ -506,4 +506,22 @@
               'gambar',
           ];
 
+------------------------------------------ POST SLUG + TAMPIL THUMBNAIL ------------------------------------------
 
+- Sekarang karna lupa naro slug di database kita bakal coba tambah slug pake migrate
+
+    
+        php artisan make:migration add_new_slug_posts_table
+        
+- di add_new_posts_table tambahkan string slug yg lainnya hapus :
+
+    
+        Schema::table('posts', function (Blueprint $table) {
+                    $table->string('slug');
+        });
+        
+- lalu diterminal ketik php artisan migrate untung memigrasinya, itu cara menambahkan field baru didalem database kita kalo misal lupa ditambah
+
+- modif dikit diPostController, tambahin slug lalu di modelnya tambah juga slug dibagian fillable nya
+
+- kemudian kita akan menampilkan gambar yang sudah dipost di database, buka /admin/post/index.blade.phpnya

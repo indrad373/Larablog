@@ -12,6 +12,7 @@ class Posts extends Model
         'category_id',
         'konten',
         'gambar',
+        'slug',
     ];
 
     //buat eloquent relationship dengan model category

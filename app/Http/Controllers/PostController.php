@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Category;
 use App\Posts;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class PostController extends Controller
 {
@@ -50,7 +51,7 @@ class PostController extends Controller
             'judul' => 'required',
             'category_id' => 'required',
             'konten' => 'required',
-            'gambar' => 'required'
+            'gambar' => 'required',
         ]);
 
         //kalo gambar kan data yg kita upload terpisah yg 1 diproject directory kita yg 1 itu di path yg ada di field table kita
@@ -63,7 +64,8 @@ class PostController extends Controller
             'judul' => $request->judul,
             'category_id' => $request->category_id,
             'konten' => $request->konten,
-            'gambar' => 'public/uploads/posts/'.$new_gambar
+            'gambar' => 'public/uploads/posts/'.$new_gambar,
+            'slug' => Str::slug($request->judul)
         ]);
 
         $gambar->move('public/uploads/posts/', $new_gambar);

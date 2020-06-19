@@ -38,6 +38,7 @@
                 <td>{{ $result + $post->firstitem() }}</td>
                 <td>{{ $hasil->judul }}</td>
                 <td>{{ $hasil->category->name }}</td> <!-- $hasil->category->nama_field_ditable_category -->
+                <td><img src="{{ asset($hasil->gambar) }}" class="img-fluid" style="width: 100px"></td>
                 <td>
                     <!-- Kenapa pake form disini ? karena kita akan langsung request ke database makanya pake form -->
                     <form action="{{ route('post.destroy', $hasil->id) }}" method="POST">
