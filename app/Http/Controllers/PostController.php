@@ -99,7 +99,10 @@ class PostController extends Controller
      */
     public function edit($id)
     {
-        //
+        $category = Category::all();
+        $tags = Tag::all();
+        $post = Posts::findorfail($id);
+        return view('admin.post.edit', compact('post','tags', 'category'));
     }
 
     /**
@@ -111,7 +114,46 @@ class PostController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        ///tambah validasi jika data ksong muncul pesan tidak boleh kosong (required)
+        $this->validate($request, [
+            'judul' => 'required',
+            'category_id' => 'required',
+            'konten' => 'required',
+        ]);
+
+        $post = Posts::findorfail($id);
+
+        if ($request->has('gambar')){
+            $gambar = $request->gambar;
+            //buat nama gambar jadi unique
+            $new_gambar = time().$gambar->getClientOriginalName();
+            $gambar->move('public/uploads/posts/', $new_gambar);
+
+            $post_data = [
+                'judul' => $request->judul,
+                'category_id' => $request->category_id,
+                'konten' => $request->konten,
+                'gambar' => 'public/uploads/posts/'.$new_gambar,
+                'slug' => Str::slug($request->judul)
+            ];
+        }
+        else {
+            $post_data = [
+                'judul' => $request->judul,
+                'category_id' => $request->category_id,
+                'konten' => $request->konten,
+                'slug' => Str::slug($request->judul)
+            ];
+        }
+
+
+
+        //sinc datanya untuk update data
+        $post->tags()->sync($request->tags);
+        $post->update($post_data);
+
+        //jika sudah berhasil kita redirect
+        return redirect()->route('post.index')->with('success', 'Postingan anda berhasil diupdate');
     }
 
     /**
@@ -122,6 +164,32 @@ class PostController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $post = Posts::findorfail($id);
+        $post->delete();
+
+        return redirect()->back()->with('success','Post berhasil dihapus ke trash');
+    }
+
+    public function tampil_trash(){
+        //mengambil hanya data2 yang sudah softdelete saja
+        $post = Posts::onlyTrashed()->paginate(10);
+        return view('admin.post.trash', compact('post'));
+        //jangan lupa buat route scr manual di web.php
+    }
+
+    public function restore($id){
+        //cari post yang ada di trash
+        $post = Posts::withTrashed()->where('id', $id)->first();
+        $post->restore();
+
+        return redirect()->back()->with('success','Post berhasil direstore, silahkan cek list post');
+    }
+
+    public function permanent_delete($id){
+        //cari post yang ada ditrash
+        $post = Posts::withTrashed()->where('id', $id)->first();
+        $post->forceDelete();
+
+        return redirect()->back()->with('success', 'Post berhasil dihapus secara permanen');
     }
 }

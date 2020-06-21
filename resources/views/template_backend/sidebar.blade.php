@@ -8,18 +8,15 @@
         </div>
         <ul class="sidebar-menu">
             <li class="menu-header">Dashboard</li>
-            <li class="dropdown">
-                <a href="#" class="nav-link has-dropdown"><i class="fas fa-fire"></i><span>Dashboard</span></a>
-                <ul class="dropdown-menu">
-                    <li><a class="nav-link" href="index-0.html">General Dashboard</a></li>
-                    <li><a class="nav-link" href="index.html">Ecommerce Dashboard</a></li>
-                </ul>
+            <li class="active">
+                <a href="{{ route('home') }}" class="nav-linkactive"><i class="fas fa-fire"></i><span>Dashboard</span></a>
             </li>
             <li class="menu-header">Starter</li>
             <li class="dropdown">
-                <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fas fa-columns"></i> <span>Post</span></a>
+                <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fas fa-book-open"></i> <span>Post</span></a>
                 <ul class="dropdown-menu">
                     <li><a class="nav-link" href={{ route('post.index') }}>List Post</a></li>
+                    <li><a class="nav-link" href={{ route('post.tampil_trash') }}>Trashed Post</a></li>
                 </ul>
             </li>
             <li class="dropdown">
@@ -29,12 +26,11 @@
                 </ul>
             </li>
             <li class="dropdown">
-                <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fas fa-columns"></i> <span>Tag</span></a>
+                <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fas fa-bookmark"></i> <span>Tag</span></a>
                 <ul class="dropdown-menu">
                     <li><a class="nav-link" href={{ route('tag.index') }}>List Tag</a></li>
                 </ul>
             </li>
-            <li class=active><a class="nav-link" href="blank.html"><i class="far fa-square"></i> <span>Blank Page</span></a></li>
         </ul>
     </aside>
 </div>

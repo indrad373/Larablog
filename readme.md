@@ -536,47 +536,203 @@
      php artisan make:migration create_post_tag_table
 
 - Pada migration yang sudah dibuat tambahkan :
-
-
+    
+    `
     public function up()
-        {
-            Schema::create('post_tag', function (Blueprint $table) {
-                $table->id();
-                $table->integer('post_id');
-                $table->integer('tag_id');
-                $table->timestamps();
-            });
-        }
+            {
+                Schema::create('post_tag', function (Blueprint $table) {
+                    $table->id();
+                    $table->integer('post_id');
+                    $table->integer('tag_id');
+                    $table->timestamps();
+                });
+            }
+    `
     
 - Lalu pada terminal ketikan php artisan migrate, untuk memigrasi relasi table post_tag yang telah dibuat
 
 - pada post index.blade.php kita tambahkan inputan berupa multiple, importkan js dan css file dari templatenya select2 js dan select2 css kemudian copykan
 
 - Pada PostController dibagian create kita buat var baru untuk membuat pilihan tag di index.blade.php menjadi dinamis
-
-
+    
+    
+    `
     public function create()
-        {
-            //buat var unutk mengambil data dari model tag
-            $tag = Tag::all();
-            //buat var untuk mengambil data dari model Category
-            $category = Category::all();
-            return view('admin.post.create', compact('category', 'tag'));
-        }
-        
+            {
+                //buat var unutk mengambil data dari model tag
+                $tag = Tag::all();
+                //buat var untuk mengambil data dari model Category
+                $category = Category::all();
+                return view('admin.post.create', compact('category', 'tag'));
+            }
+    `
+       
 - Lakukan foreach di index.blade.php nya
 
 - Sekarang kita ingin melakukan penyimpanan si select multiple itu td, pergi ke PostController lalu tambahkan :
 
-    
+
+    `
     //attach tagnya buat penyimpanan muliple
     $post->tags()->attach($request->tags);
-
+    `
+    
 - Lalu dibagian post index.blade.php kita akan keluarkan tags nya
 
+-------------------------------------------------- EDIT POST ---------------------------------------------------
+
+- pada PostController bagian edit samain kaya edit2 sebelumnya :
 
 
+    `
+    public function edit($id)
+    {
+            $category = Category::all();
+            $tags = Tag::all();
+            $post = Posts::findorfail($id);
+            return view('admin.post.edit', compact('post','tags','category'));
+    }
+    `
+
+- pada edit.blade.php ubah sedikit untuk mengeluarkan datanya
+
+- pada PostController di bagian update :
 
 
+    ///tambah validasi jika data ksong muncul pesan tidak boleh kosong (required)
+            $this->validate($request, [
+                'judul' => 'required',
+                'category_id' => 'required',
+                'konten' => 'required',
+            ]);
+    
+            $post = Posts::findorfail($id);
+    
+            if ($request->has('gambar')){
+                $gambar = $request->gambar;
+                //buat nama gambar jadi unique
+                $new_gambar = time().$gambar->getClientOriginalName();
+                $gambar->move('public/uploads/posts/', $new_gambar);
+    
+                $post_data = [
+                    'judul' => $request->judul,
+                    'category_id' => $request->category_id,
+                    'konten' => $request->konten,
+                    'gambar' => 'public/uploads/posts/'.$new_gambar,
+                    'slug' => Str::slug($request->judul)
+                ];
+            }
+            else {
+                $post_data = [
+                    'judul' => $request->judul,
+                    'category_id' => $request->category_id,
+                    'konten' => $request->konten,
+                    'slug' => Str::slug($request->judul)
+                ];
+            }
+        
+            //sinc datanya untuk update data
+            $post->tags()->sync($request->tags);
+            $post->update($post_data);
+    
+            //jika sudah berhasil kita redirect
+            return redirect()->route('post.index')->with('success', 'Postingan anda berhasil diupdate'); 
+
+-------------------------------- SOFT DELETE & RESTORE------------------------------
+
+- Pergi ke model Posts tambahkan :
+
+    `
+        //buat softdelete
+        use SoftDeletes;
+    `
+
+- Pergi ke PostController lalu dibagian destroy 
 
 
+    public function destroy($id)
+        {
+            $post = Posts::findorfail($id);
+            $post->delete();
+            
+            return redirect()->back()->with('success','Post berhasil dihapus ke trash');
+        }
+        
+- buat suatu table migration pada terminal ketikan :
+
+    `php artisan make:migration tambah_softdelete_ke_post`
+
+- dalam table migration yang baru copy dari table migration post yg up :
+
+     
+     Schema::table('posts', function (Blueprint $table) {
+                 //pake table bawaan softdelete dr laravel
+                 $table->softDeletes();
+             });
+             
+- Pada terminal jalankan :
+
+    `php artisan migrate`
+    
+    maka akan menambah field baru deleted_at
+    
+- Kita akan menampilkan data pada trash bin, buat sebuah function baru pada PostController :
+
+    
+    public function tampil_trash(){
+        //mengambil hanya data2 yang sudah softdelete saja
+        $post = Posts::onlyTrashed()->paginate(10);
+        return view('admin.post.trash');
+        //jangan lupa buat route scr manual di web.php
+    }
+    
+- Buat route tampil_hapus secara manual di web.php, posisinya disimpan diatas karna posisi itu pengaruh
+
+    `Route::get('/post/tampil_trash', 'PostController@tampil_trash')->name('post.tampil_trash');`
+
+- Buat file pada /admin/post dengan nama trash.blade.php, lalu copy paste dr halaman index ganti dikit2 kata2nya
+
+- Tambahkan juga route buat akses halaman trashed post nya di sidebar.blade.php :
+
+    `route('post.tampil_trash')`
+
+- Lalu buat function baru di PostController untuk restore datanya
+
+    
+    public function restore($id){
+            //cari post yang ada di trash
+            $post = Posts::withTrashed()->where('id', $id)->first();
+            $post->restore();
+            return redirect()->back()->with('success','Post berhasil direstore, silahkan cek list post');
+        }
+        
+- Kemudian buat route secara manual untuk function restore ini di web.php :
+
+    `//route manual restore
+     Route::get('/post/restore/{id}', 'PostController@restore')->name('post.restore');
+     
+- Pada trash.blade.php panggil route restorenya :
+
+    `{{ route('post.restore', $hasil->id) }}`
+
+- Kemudian kita akan membuat fungsi hapus data secara permanen, buat function baru di PostController :
+
+
+        public function permanent_delete($id){
+            //cari post yang ada ditrash
+            $post = Posts::withTrashed()->where('id', $id)->first();
+            $post->forceDelete();
+    
+            return redirect()->back()->with('success', 'Post berhasil dihapus secara permanen');
+        }
+        
+- Pada web.php kita buat route untuk panggil permanent_deletenya :
+
+    `//route manual permanent_delete
+     Route::delete('/post/permanent_delete/{id}', 'PostController@permanent_delete')->name('post.permanent_delete');`
+
+- Lalu pada trash.blade.php tambahkan action route ke post.permanent_delete :
+
+    `{{ route('post.permanent_delete', $hasil->id) }}`
+    
+        
