@@ -13,13 +13,20 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+//posisinya hrs paling atas
+Auth::routes();
+
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/home', function () {
+/*
+    Route::get('/home', function () {
     return view('home');
-})->name('home');
+    })->name('home');
+
+//ini sama kaya yg dibawah
+*/
 
 /*
  * knp pake route resource ? tujuannya adalah agar pengerjaan route yang sering kita lakukan kedepan itu
@@ -27,13 +34,19 @@ Route::get('/home', function () {
     disediakan oleh laravel itu sendiri
 */
 
-//route manual tampil_hapus
-Route::get('/post/tampil_trash', 'PostController@tampil_trash')->name('post.tampil_trash');
-//route manual restore
-Route::get('/post/restore/{id}', 'PostController@restore')->name('post.restore');
-//route manual permanent_delete
-Route::delete('/post/permanent_delete/{id}', 'PostController@permanent_delete')->name('post.permanent_delete');
+//tambahkan route group untuk auth middleware
+//pake 'middleware' untuk check apakah url yang diakses itu usernya udh login atau blm
+Route::group(['middleware' => 'auth'], function (){
+    Route::get('/home', 'HomeController@index')->name('home');
 
-Route::resource('/category','CategoryController');
-Route::resource('/tag', 'TagController');
-Route::resource('/post', 'PostController');
+    //route manual tampil_hapus
+    Route::get('/post/tampil_trash', 'PostController@tampil_trash')->name('post.tampil_trash');
+    //route manual restore
+    Route::get('/post/restore/{id}', 'PostController@restore')->name('post.restore');
+    //route manual permanent_delete
+    Route::delete('/post/permanent_delete/{id}', 'PostController@permanent_delete')->name('post.permanent_delete');
+
+    Route::resource('/category','CategoryController');
+    Route::resource('/tag', 'TagController');
+    Route::resource('/post', 'PostController');
+});

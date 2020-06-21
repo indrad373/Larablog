@@ -25,13 +25,13 @@
 - kemudian untuk menampilkan datanya, pada file /admin/category/index.blade.php tambahkan :
     
     
-    @foreach($category as $result)
+    `@foreach($category as $result)
         <ul>
             <li>
                 {{ $result->name }}
             </li>
         </ul>
-    @endforeach
+    @endforeach`
     
   maka data name akan ditampilkan
 
@@ -48,9 +48,9 @@
 - Lalu pada /admin/category/index.blade.php, tambah dibagian atas : 
 
 
-    <a href="{{ route('category.create') }}" class="btn btn-info">Tambah Kategori</a>
+    `<a href="{{ route('category.create') }}" class="btn btn-info">Tambah Kategori</a>
             <br><br>
-    <!-- category.create itu routenya -->
+    <!-- category.create itu routenya -->`
     
 
 - Lalu pada /admin/category/ buat file baru create.blade.php samakan isi import nya dengan index.blade.php, ganti sub-judulnya lalu tambahkan form
@@ -58,26 +58,26 @@
 - Pada CategoryController kita akan memasukan / menyimpan data yang tabel nya kita panggil dari model kategori, sebelumnya import str helper use Illuminate\Support\Str;
 
 	
-	$category = Category::create([
-            'name' => $request->name,
-            'slug' => Str::slug($request->name),
-        ]);
-        
-        return redirect()->back();
+            $category = Category::create([
+                    'name' => $request->name,
+                    'slug' => Str::slug($request->name),
+                ]);
+                
+                return redirect()->back();
         
         
 - Pada model Category kita harus menentukan field mana saja yang boleh dimasukan dalam database : 
 
 
-    protected $fillable = ['name', 'slug'];
+    `protected $fillable = ['name', 'slug'];`
     
 
 - Edit template sidebar menjadi kategori dan <li> nya menjadi List Kategori : 
 	
 	
-	<a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fas fa-columns"></i> <span>Kategori</span></a>
+	`<a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fas fa-columns"></i> <span>Kategori</span></a>
         <ul class="dropdown-menu">
-        <li><a class="nav-link" href={{ route('category.index') }}>List Kategori</a></li>
+        <li><a class="nav-link" href={{ route('category.index') }}>List Kategori</a></li>`
 
 
 -------------------------------------------- VALIDATION AND FLASH ------------------------------------------------------------------
@@ -85,42 +85,41 @@
 - Pada CategoryController, tambah validasi ketika menginputkkan data jd jika data yang diinputkan kosong akan muncul validasi bahwa data tidak boleh kosong :
 
 	
-	$this->validate($request, [
-		'name' => 'required|min:4', 
-		//minimal ada 4 hruf yg kita inputkan
-	]);
+            $this->validate($request, [
+                'name' => 'required|min:4', 
+                //minimal ada 4 hruf yg kita inputkan
+            ]);
 	
 - pada admin/category/create.blade.php dibawah section, buat sebuah kondisi jika errornya ada maka akan mengeluarkan message error
     
     
-    @if(count($errors) > 0)
-        @foreach($errors->all() as $error)
-            <div class="alert alert-danger" role="alert">
-                {{ $error }}
-            </div>
-        @endforeach
-    @endif
+        `@if(count($errors) > 0)
+            @foreach($errors->all() as $error)
+                <div class="alert alert-danger" role="alert">
+                    {{ $error }}
+                </div>
+            @endforeach
+        @endif`
     	
 - Pada CategoryController, tambah with untuk mengeluarkan flash data berhasil disimpan :
 	
 	
-	return redirect()->back()->with('success','Kategori berhasil disimpan');
+	`return redirect()->back()->with('success','Kategori berhasil disimpan');`
 	
 - pada admin/category/create.blade.php, buat sebuah kondisi jika data berhasil dimasukan maka akan mengeluarkan flash berhasil	
     
     
-    @if(Session::has('success')) <!-- jika si Session punya success sama seperti yang dikontroller maka kita akan tampilkan -->
-        <div class="alert alert-danger" role="alert">
-            {{ Session('success') }}
-        </div>
-    @endif
+        `@if(Session::has('success')) <!-- jika si Session punya success sama seperti yang dikontroller maka kita akan tampilkan -->
+            <div class="alert alert-danger" role="alert">
+                {{ Session('success') }}
+            </div>
+        @endif`
     	
 ----------------------------------------------EDIT AND UPDATE DATA---------------------------------------------------------------------------
 	
 - pada admin/category/create.blade.php, tambahkan href route pada button edit :
 	
-	
-	<a href="{{ route('category.edit', $hasil->id) }}" class="btn btn-primary btn-sm">Edit</a>
+	`<a href="{{ route('category.edit', $hasil->id) }}" class="btn btn-primary btn-sm">Edit</a>`
 	
 - pada CategoryController bagian edit, tambah :
 	
@@ -202,71 +201,69 @@
 - Pada template backend sidebar.blade.php, copy menu dropdown kategori lalu ubah menjadi tag :
     
     
-    <form>
-    <li class="dropdown">
-        <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fas fa-columns"></i> <span>Tag</span></a>
-        <ul class="dropdown-menu">
-            <li><a class="nav-link" href={{ route('category.index') }}>List Tag</a></li>
-        </ul>
-    </li>
-    </form>
+        `<li class="dropdown">
+            <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fas fa-columns"></i> <span>Tag</span></a>
+            <ul class="dropdown-menu">
+                <li><a class="nav-link" href={{ route('category.index') }}>List Tag</a></li>
+            </ul>
+        </li>`
     
 - Kemudian buat model untuk tag pada terminal ketikan :
     
     
-    php artisan make:model Tags -m
-    <!-- -m berarti kita buat model sekaligus dimigrasi -->
+    `php artisan make:model Tags -m`
+    -m berarti kita buat model sekaligus dimigrasi
 
 - Lalu pada file tags migrationnya pada function up table yang akan dibuat, kita tambahkan :
     
     
-    public function up()
-        {
-            Schema::create('tags', function (Blueprint $table) {
-                $table->id();
-                $table->string('name');
-                $table->string('slug');
-                $table->timestamps();
-            });
-        }
+        public function up()
+            {
+                Schema::create('tags', function (Blueprint $table) {
+                    $table->id();
+                    $table->string('name');
+                    $table->string('slug');
+                    $table->timestamps();
+                });
+            }
 
 - Pada terminal ketikan, php artisan migrate untuk memigrasi table tags yang kita buat di laravel ke mysql database :
 
 
-    php artisan migrate
+    `php artisan migrate`
     
 - Lalu tambahkan data secara manual pada database table tags, lalu kita memperoleh data yang telah secara manual kita tambahkan pada tabel tags
 
 - Buat controller untuk mengeluarkan data tags yang ada di database :
 
     
-    php artisan make:controller TagController --resource
+    `php artisan make:controller TagController --resource`
 
 - Pada web.php tambahkan route baru untuk mengakses controllernya :
 
     
-    Route::resource('/tag', 'TagController');
+    `Route::resource('/tag', 'TagController');`
     
 - Jalankan command pada terminal, untuk melihat route list yang dapat digunakan :
 
     
-    php artisan route:list    
+    `php artisan route:list`    
     
 - Untuk menampilkan data kita perlu route tag.index, pergi ke sidebar.blade.php lalu ubah :
 
     
-    <li><a class="nav-link" href={{ route('category.index') }}>List Kategori</a></li>
+    `<li><a class="nav-link" href={{ route('category.index') }}>List Kategori</a></li>`
 
     menjadi
     
-    <li><a class="nav-link" href={{ route('tag.index') }}>List Kategori</a></li>
+    `<li><a class="nav-link" href={{ route('tag.index') }}>List Kategori</a></li>`
 
 
 - Pada TagController dibagian index ketikan :
 
     
-    //return sebuah view yang merujuk pada sebuah folder /admin/tag/index.blade.php
-    return view('admin.tag.index');
+            //return sebuah view yang merujuk pada sebuah folder /admin/tag/index.blade.php
+            return view('admin.tag.index');
     
     
 - Buat sebuah file baru di folder /admin -> index
@@ -276,23 +273,23 @@
 - Pada folder TagController bagian index, tambahkan variabel tag (sama kaya category) :
 
     
-    public function index()
-        {
-            //kita tambah sebuah variabel yang akan memanggil semua data dari category model
-            //$tag = Posts::all();
-    
-            $tag = Posts::paginate(10);
-    
-            //return sebuah view yang merujuk pada sebuah folder /admin/post/index.blade.php
-            return view('admin.post.index', compact('tag'));
-        }
+        public function index()
+            {
+                //kita tambah sebuah variabel yang akan memanggil semua data dari category model
+                //$tag = Posts::all();
+        
+                $tag = Posts::paginate(10);
+        
+                //return sebuah view yang merujuk pada sebuah folder /admin/post/index.blade.php
+                return view('admin.post.index', compact('tag'));
+            }
     
     
 - Pada file TagController bagian create (sama kaya category) :
     
     
-    //buat return
-    return view('admin.tag.create');
+            //buat return
+            return view('admin.tag.create');
     
     
 - Buat file create.blade.php pada /admin/tag
@@ -302,97 +299,97 @@
 - Pada file TagController bagian create (sama kaya category) :
 
 
-    //tambah validasi jika data ksong muncul pesan tidak boleh kosong (required)
-    $this->validate($request, [
-        'name' => 'required|max:20|min:4'
-    ]);
-    
-    //disini kita akan memasukan data di model tag yang tabelnya kita panggil dr model tag
-    //lakukan penyimpanan data kedalam tabel, buat sebuah var
-    $tag = Tag::create([
-        'name' => $request->name,
-        //value slug nya kita ambil dr name yang kita udah tulis
-        'slug' => Str::slug($request->name),
-    ]);
-    
-    return redirect()->back()->with('success','Tag berhasil disimpan');
-    //tambah with untuk mengeluarkan flash data berhasil disimpan
+            //tambah validasi jika data ksong muncul pesan tidak boleh kosong (required)
+            $this->validate($request, [
+                'name' => 'required|max:20|min:4'
+            ]);
+            
+            //disini kita akan memasukan data di model tag yang tabelnya kita panggil dr model tag
+            //lakukan penyimpanan data kedalam tabel, buat sebuah var
+            $tag = Tag::create([
+                'name' => $request->name,
+                //value slug nya kita ambil dr name yang kita udah tulis
+                'slug' => Str::slug($request->name),
+            ]);
+            
+            return redirect()->back()->with('success','Tag berhasil disimpan');
+            //tambah with untuk mengeluarkan flash data berhasil disimpan
 
 
 - Pada Tag model tambahkan : 
 
     
-    protected $fillable = ['name', 'slug'];
+    `protected $fillable = ['name', 'slug'];`
     
 
 - Pada TagController bagian edit tambahkan :
 
 
-    //dapatkan dayanya dulu
-    $tag = Tag::findorfail($id);
-    return view('admin.tag.edit', compact('tag'));
+            //dapatkan dayanya dulu
+            $tag = Tag::findorfail($id);
+            return view('admin.tag.edit', compact('tag'));
     
 - Pada admin/tag/ buat file edit.blade.php lalu copy file edit yang ada di folder category, lalu ubah kata kategori menjadi tag
 
 - Pada TagController bagian update tambahkan :
 
 
-    //validasi dulu
-    $this->validate($request, [
-        //tulis apa sih request kita
-        'name' => 'required',
-    ]);
-    
-    //buat sebuah array lagi
-    $tag_data = [
-        'name' => $request->name,
-        'slug' => Str::slug($request->name),
-    ];
-    
-    //buat pencarian id, panggil modelnya
-    Tag::whereId($id)->update($tag_data);
-    
-    //return dan redirect ke sebuah route
-    return redirect()->route('tag.index')->with('success', 'Tag Berhasil di Update');
+            //validasi dulu
+            $this->validate($request, [
+                //tulis apa sih request kita
+                'name' => 'required',
+            ]);
+            
+            //buat sebuah array lagi
+            $tag_data = [
+                'name' => $request->name,
+                'slug' => Str::slug($request->name),
+            ];
+            
+            //buat pencarian id, panggil modelnya
+            Tag::whereId($id)->update($tag_data);
+            
+            //return dan redirect ke sebuah route
+            return redirect()->route('tag.index')->with('success', 'Tag Berhasil di Update');
 
 
 - Pada TagController bagian destroy tambah :
 
     
-    //buat var, suruh cari id nya
-    $tag = Tag::findorfail($id);
-    //kalo ketemu kita tingal suruh delete
-    $tag->delete();
-    
-    //return dan redirect back
-    return redirect()->back()->with('success', 'Data Berhasil dihapus');
+            //buat var, suruh cari id nya
+            $tag = Tag::findorfail($id);
+            //kalo ketemu kita tingal suruh delete
+            $tag->delete();
+            
+            //return dan redirect back
+            return redirect()->back()->with('success', 'Data Berhasil dihapus');
     
 ----------------------------------------------- CRUD POST ----------------------------------------------
 
 - Buat model post baru ketikan diterminal :
     
     
-    php artisan make:model Posts -m
+    `php artisan make:model Posts -m`
 
 - Pada migration posts table tambahkan :
 
 
-    public function up()
-        {
-            Schema::create('posts', function (Blueprint $table) {
-                $table->id();
-                $table->string('judul');
-                $table->integer('category_id');
-                $table->text('content');
-                $table->string('gambar');
-                $table->timestamps();
-            });
-        }
+        public function up()
+            {
+                Schema::create('posts', function (Blueprint $table) {
+                    $table->id();
+                    $table->string('judul');
+                    $table->integer('category_id');
+                    $table->text('content');
+                    $table->string('gambar');
+                    $table->timestamps();
+                });
+            }
 
 - Pada terminal ketikan php artisan migrate :
     
         
-     php artisan migrate
+     `php artisan migrate`
      
 - Pada template backend sidebar.blade.php, copy menu dropdown kategori lalu ubah menjadi post :
       
@@ -409,35 +406,35 @@
 - Buat controller untuk mengeluarkan data post yang ada di database :
 
     
-    php artisan make:controller PostController --resource
+    `php artisan make:controller PostController --resource`
 
 - Pada web.php tambahkan route baru untuk mengakses controllernya :
 
     
-    Route::resource('/tag', 'PostController');
+    `Route::resource('/tag', 'PostController');`
     
 - Jalankan command pada terminal, untuk melihat route list yang dapat digunakan :
 
     
-    php artisan route:list  
+    `php artisan route:list`  
 
 - Pada TagController dibagian index ketikan :
 
     
-    //return sebuah view yang merujuk pada sebuah folder /admin/tag/index.blade.php
-    return view('admin.post.index');
+        //return sebuah view yang merujuk pada sebuah folder /admin/tag/index.blade.php
+        return view('admin.post.index');    
     
     
 - Buat sebuah file baru di folder /admin
     
     
-    //kita tambah sebuah variabel yang akan memanggil semua data dari category model
-    //$tag = Posts::all();
-    
-    $post = Posts::paginate(10);
-    
-    //return sebuah view yang merujuk pada sebuah folder /admin/post/index.blade.php
-    return view('admin.post.index', compact('post'));
+        //kita tambah sebuah variabel yang akan memanggil semua data dari category model
+        //$tag = Posts::all();
+        
+        $post = Posts::paginate(10);
+        
+        //return sebuah view yang merujuk pada sebuah folder /admin/post/index.blade.php
+        return view('admin.post.index', compact('post'));
             
 - kemudian kita akan buat eloquent relationship, pada model Posts kita ketikan :
 
@@ -451,8 +448,8 @@
 - Pada file TagController bagian create (sama kaya tag) :
     
     
-    //buat return
-    return view('admin.post.create');
+            //buat return
+            return view('admin.post.create');
     
     
 - Buat file create.blade.php pada /admin/post
@@ -462,9 +459,9 @@
 - Pada PostController tambah script :
 
 
-    //buat var untuk mengambil data dari model Category
-    $category = Category::all();
-    return view('admin.post.create', compact('category'));
+            //buat var untuk mengambil data dari model Category
+            $category = Category::all();
+            return view('admin.post.create', compact('category'));
     
 - Pada file TagController bagian create (sama kaya category) :
 
@@ -511,7 +508,7 @@
 - Sekarang karna lupa naro slug di database kita bakal coba tambah slug pake migrate
 
     
-        php artisan make:migration add_new_slug_posts_table
+        `php artisan make:migration add_new_slug_posts_table`
         
 - di add_new_posts_table tambahkan string slug yg lainnya hapus :
 
@@ -533,49 +530,42 @@
 - buat pivot title, sebelumnya buat dulu relationnya buat table sendiri khusus relation post dan tag, buka terminal :
 
      
-     php artisan make:migration create_post_tag_table
+     `php artisan make:migration create_post_tag_table`
 
 - Pada migration yang sudah dibuat tambahkan :
     
-    `
-    public function up()
-            {
-                Schema::create('post_tag', function (Blueprint $table) {
-                    $table->id();
-                    $table->integer('post_id');
-                    $table->integer('tag_id');
-                    $table->timestamps();
-                });
-            }
-    `
+
+        public function up(){
+            Schema::create('post_tag', function (Blueprint $table) {
+                $table->id();
+                $table->integer('post_id');
+                $table->integer('tag_id');
+                $table->timestamps();
+            });
+        }
     
 - Lalu pada terminal ketikan php artisan migrate, untuk memigrasi relasi table post_tag yang telah dibuat
 
 - pada post index.blade.php kita tambahkan inputan berupa multiple, importkan js dan css file dari templatenya select2 js dan select2 css kemudian copykan
 
 - Pada PostController dibagian create kita buat var baru untuk membuat pilihan tag di index.blade.php menjadi dinamis
+
     
-    
-    `
-    public function create()
-            {
-                //buat var unutk mengambil data dari model tag
-                $tag = Tag::all();
-                //buat var untuk mengambil data dari model Category
-                $category = Category::all();
-                return view('admin.post.create', compact('category', 'tag'));
-            }
-    `
+        public function create(){
+            //buat var unutk mengambil data dari model tag
+            $tag = Tag::all();
+            //buat var untuk mengambil data dari model Category
+            $category = Category::all();
+            return view('admin.post.create', compact('category', 'tag'));
+        }
        
 - Lakukan foreach di index.blade.php nya
 
 - Sekarang kita ingin melakukan penyimpanan si select multiple itu td, pergi ke PostController lalu tambahkan :
 
 
-    `
-    //attach tagnya buat penyimpanan muliple
-    $post->tags()->attach($request->tags);
-    `
+        //attach tagnya buat penyimpanan muliple
+        $post->tags()->attach($request->tags);
     
 - Lalu dibagian post index.blade.php kita akan keluarkan tags nya
 
@@ -583,23 +573,20 @@
 
 - pada PostController bagian edit samain kaya edit2 sebelumnya :
 
-
-    `
-    public function edit($id)
-    {
-            $category = Category::all();
-            $tags = Tag::all();
-            $post = Posts::findorfail($id);
-            return view('admin.post.edit', compact('post','tags','category'));
-    }
-    `
-
+    
+        public function edit($id){
+                $category = Category::all();
+                $tags = Tag::all();
+                $post = Posts::findorfail($id);
+                return view('admin.post.edit', compact('post','tags','category'));
+        }
+    
 - pada edit.blade.php ubah sedikit untuk mengeluarkan datanya
 
 - pada PostController di bagian update :
 
 
-    ///tambah validasi jika data ksong muncul pesan tidak boleh kosong (required)
+            ///tambah validasi jika data ksong muncul pesan tidak boleh kosong (required)
             $this->validate($request, [
                 'judul' => 'required',
                 'category_id' => 'required',
@@ -642,21 +629,20 @@
 
 - Pergi ke model Posts tambahkan :
 
-    `
-        //buat softdelete
-        use SoftDeletes;
-    `
+    
+        `//buat softdelete`
+        `use SoftDeletes;`
 
 - Pergi ke PostController lalu dibagian destroy 
 
 
-    public function destroy($id)
-        {
-            $post = Posts::findorfail($id);
-            $post->delete();
-            
-            return redirect()->back()->with('success','Post berhasil dihapus ke trash');
-        }
+        public function destroy($id)
+            {
+                $post = Posts::findorfail($id);
+                $post->delete();
+                
+                return redirect()->back()->with('success','Post berhasil dihapus ke trash');
+            }
         
 - buat suatu table migration pada terminal ketikan :
 
@@ -665,10 +651,10 @@
 - dalam table migration yang baru copy dari table migration post yg up :
 
      
-     Schema::table('posts', function (Blueprint $table) {
-                 //pake table bawaan softdelete dr laravel
-                 $table->softDeletes();
-             });
+         Schema::table('posts', function (Blueprint $table) {
+                     //pake table bawaan softdelete dr laravel
+                     $table->softDeletes();
+                 });
              
 - Pada terminal jalankan :
 
@@ -679,12 +665,12 @@
 - Kita akan menampilkan data pada trash bin, buat sebuah function baru pada PostController :
 
     
-    public function tampil_trash(){
-        //mengambil hanya data2 yang sudah softdelete saja
-        $post = Posts::onlyTrashed()->paginate(10);
-        return view('admin.post.trash');
-        //jangan lupa buat route scr manual di web.php
-    }
+        public function tampil_trash(){
+            //mengambil hanya data2 yang sudah softdelete saja
+            $post = Posts::onlyTrashed()->paginate(10);
+            return view('admin.post.trash');
+            //jangan lupa buat route scr manual di web.php
+        }
     
 - Buat route tampil_hapus secara manual di web.php, posisinya disimpan diatas karna posisi itu pengaruh
 
@@ -699,7 +685,7 @@
 - Lalu buat function baru di PostController untuk restore datanya
 
     
-    public function restore($id){
+        public function restore($id){
             //cari post yang ada di trash
             $post = Posts::withTrashed()->where('id', $id)->first();
             $post->restore();
@@ -709,7 +695,7 @@
 - Kemudian buat route secara manual untuk function restore ini di web.php :
 
     `//route manual restore
-     Route::get('/post/restore/{id}', 'PostController@restore')->name('post.restore');
+     Route::get('/post/restore/{id}', 'PostController@restore')->name('post.restore');`
      
 - Pada trash.blade.php panggil route restorenya :
 
@@ -735,4 +721,66 @@
 
     `{{ route('post.permanent_delete', $hasil->id) }}`
     
-        
+------------------------------------------- LOGIN REGISTER ----------------------------------------------
+
+- Pada terminal ketikan :
+    
+     `composer require laravel/ui`
+     
+     `php artisan ui vue --auth`
+    
+  Nanti bakal ada menu pertanyaan apakah home.blade.php mau direplace pake yang baru ? nah jawab Yes
+  
+- Lalu ketik :
+
+    `npm install && npm run dev`
+    
+  Untuk compile tampilan css dan jsnya
+  
+- Lalu extend template_backend.app ke views/home.blade.php :
+
+    `@extends('layout.app')`
+    
+    ubah menjadi 
+    
+    `@extends('template_backend.home')`
+
+- Copy script logout dari layout/app.blade.php :
+            
+            
+            <a href="#" class="dropdown-item has-icon text-danger">
+                                        <i class="fas fa-sign-out-alt"></i> Logout
+            </a>    
+
+  menjadi
+
+            <a class="dropdown-item has-icon text-danger" href="{{ route('logout') }}"
+               onclick="event.preventDefault();
+                        document.getElementById('logout-form').submit();">
+                <i class="fas fa-sign-out-alt"></i>
+                {{ __('Logout') }}
+            </a>
+
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                @csrf
+            </form>
+            
+  Paste ke template backend kita template_backend/home.blade.php
+
+- Lalu pada web.php bungkus route yang sudah kita buat kedalam route group middleware auth :
+
+
+            Route::group(['middleware' => 'auth'], function (){
+                Route::get('/home', 'HomeController@index')->name('home');
+            
+                //route manual tampil_hapus
+                Route::get('/post/tampil_trash', 'PostController@tampil_trash')->name('post.tampil_trash');
+                //route manual restore
+                Route::get('/post/restore/{id}', 'PostController@restore')->name('post.restore');
+                //route manual permanent_delete
+                Route::delete('/post/permanent_delete/{id}', 'PostController@permanent_delete')->name('post.permanent_delete');
+            
+                Route::resource('/category','CategoryController');
+                Route::resource('/tag', 'TagController');
+                Route::resource('/post', 'PostController');
+            });
