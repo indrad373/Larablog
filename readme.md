@@ -850,7 +850,7 @@
 - Kemudian dibagian post/index.blade.php sebelah tags tambahkan suatu kolom untuk nama usernya :
 
 
-            `<tr>
+            <tr>
                         <th>No</th>
                         <th>Nama Post</th>
                         <th>Kategori</th>
@@ -858,11 +858,11 @@
                         <th>Creator</th>
                         <th>Gambar</th>
                         <th>Action</th>
-            </tr>`
+            </tr>
             
   Kemudian
   
-            `<td>{{ $hasil->users->name }}</td>`
+            <td>{{ $hasil->users->name }}</td>
 
 - Lalu kita akan mengubah sedikit tampilan dari tags nya, kita akan ubah sehingga tags nya memiliki badge
 - Pada post/index.blade.php kita ubah :
@@ -873,3 +873,80 @@
      
      `<h6><span class="badge badge-primary">{{ $tag->name }}</span></h6>`
 
+----------------------------------------- TAMPIL DATA USER -------------------------------------------
+
+- Kita akan menampilkan data user yang telah register, pertama buat UserController :
+    
+    `php artisan make:controller UserController --resource`
+
+- Kemudian kita akan menambahkan menu untuk melihat user pada sidebar.blade.php, copy paste saja lalu ganti2 dikit
+    
+    
+            <li class="dropdown">
+                  <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fas fa-users"></i> <span>User</span></a>
+                  <ul class="dropdown-menu">
+                      <li><a class="nav-link" href={{ route('user.index') }}>List User</a></li>
+                  </ul>
+            </li>
+            
+- Kemudian jangan lupa di web.php tambahkan route index user agar dapat diakses :
+
+    `Route::resource('user', 'UserController');`
+    
+- Lalu pada UserController bagian index, tambahkan return baru yang akan mereturn ke file user/index.blade.php
+
+
+            //kita akan berelasi dengan table user
+            //kita buat sebuah var untuk menampung data user yang ada didatabase
+            $user = User::paginate(10);
+            return view('admin.user.index', compact('user'));         
+            
+- Lalu copy seperti biasa dari category/index.blade.php ke user/index.blade.php lalu ubah2 kata kategori menjadi user
+
+- Kemudian kita akan menambah field baru yaitu tipe_user, pada terminal ketikan :
+
+  `php artisan make:migration tambah_field_tipe_user_ke_user`            
+            
+- Lalu copy schema dari yang lalu kemudian paste kan kepada file tambah field tipe_user, lalu ganti nama fieldnya dengan tipe         
+            
+  
+              public function up()
+              {
+                  Schema::table('users', function (Blueprint $table) {
+                      //pake table bawaan softdelete dr laravel
+                      //kalo bukan admin 0, kalo admin 1 jd defaultnya 0 aja
+                      $table->boolean('tipe')->default(0);
+                  });
+              }
+            
+- Kemudian migrate ke database, pada terminal ketikan :
+
+    `php artisan migrate`
+            
+- Kemudian ganti data tipe yang ada didatabase dengan 1
+
+- Lalu pada /user/index.blade.php tambah lagi dengan tipe            
+            
+            
+              <tr>
+                  <th>No</th>
+                  <th>Nama User</th>
+                  <th>Email</th>
+                  <th>Role Type</th>
+                  <th>Action</th>
+              </tr>
+            
+  Dan
+  
+            
+              <td>
+                    <!-- disini kalo tipenya 1 berarti yang muncul kata admin kalo 0 yang muncul kata writer -->
+                    @if ($hasil->tipe)
+                        <span class="badge badge-info">Admin</span>
+                        @else
+                        <span class="badge badge-warning">Writer</span>
+                    @endif
+              </td>
+            
+            
+            
