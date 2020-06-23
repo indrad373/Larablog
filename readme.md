@@ -947,6 +947,131 @@
                         <span class="badge badge-warning">Writer</span>
                     @endif
               </td>
+              
+----------------------------------------- MANAGEMENT USER ---------------------------------------------
+
+- pada user/index.blade.php ubah 
+
+    `<a href="{{ route('category.create') }}" class="btn btn-info">Tambah User</a>`
+    
+    menjadi
+    
+    `<a href="{{ route('user.create') }}" class="btn btn-info">Tambah User</a>`
             
+- Pada UserController bagian create :
+
+
+            public function create()
+            {
+                return view('admin.user.create');
+            }            
             
-            
+- Lalu buat file baru /admin/user/create.blade.php, lalu seperti biasa copas dari create.blade.php yang ada difolder lain kemudian ubah2 dikit
+
+- Kemudian pada UserController bagian store :
+
+
+            public function store(Request $request)
+            {
+                //kita validasi dulu datanya
+                $this->validate($request, [
+                    'name' => 'required|min:3|max:100',
+                    'email' => 'required|email',
+                    'tipe'=> 'required',
+                ]);
+        
+                //jika ketika proses pembuatan user field password tidak diisi baik sengaja atau tidak maka akan mengeluarkan password default
+                //jika kita input password maka kita akan store password yang telah dibuat oleh kita
+                if ($request->input('password')){
+                    $password = bcrypt($request->password);
+                } else {
+                    //jika tidak maka akan store default password, yaitu 1234
+                    $password = bcrypt('1234');
+                }
+        
+                User::create([
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'tipe' => $request->tipe,
+                    //ambil data dari var password
+                    'password' => $password
+                ]);
+        
+                return redirect()->back()->with('success', 'User Berhasil Disimpan');
+            }
+
+- Lalu pada User model di bagian fillable bawaannya tambahkan tipe :
+
+
+            protected $fillable = [
+                'name', 'email', 'password','tipe',
+            ];
+
+- Pada /user/index.blade.php ubah route edit menjadi :
+
+
+            <a href="{{ route('user.edit', $hasil->id) }}" class="btn btn-primary btn-sm">Edit</a>
+
+- Lalu pada UserController bagian edit :
+
+    
+            public function edit($id)
+            {
+                $user = User::find(id);
+                return view('admin.user.edit', compact('user'));
+        
+            }
+
+- Kemudian buat sebuah file baru /user/edit.blade.php lalu copy seperti biasa dari create.blade.php lalu ubah2
+
+- Lalu pada UserController bagian update :
+
+
+            public function update(Request $request, $id)
+            {
+                //kita validasi dulu datanya
+                $this->validate($request, [
+                    'name' => 'required|min:3|max:100',
+                    'tipe'=> 'required',
+                ]);
+        
+                //jika password nya kita input berarti passwordnya kita ubah
+                if($request->input('password')){
+                    //buat var untuk menampung data
+                    $user_data = [
+                        'name' => $request->name,
+                        'tipe' => $request->tipe,
+                        'password' => bcrypt($request->password),
+                    ];
+                } else { //kalo kita ga input password ya berarti ga diubah diemin aja
+                    //buat var untuk menampung data
+                    $user_data = [
+                        'name' => $request->name,
+                        'tipe' => $request->tipe,
+                    ];
+                }
+        
+                $user = User::find($id);
+                $user->update($user_data);
+        
+                return redirect()->route('user.index')->with('success', 'Data User Berhasil Diupdate');
+            }
+
+- Sekarang untuk delete user pada /user/index.blade.php ubah :
+    
+    `<form action="{{ route('category.destroy', $hasil->id) }}" method="POST">`
+    
+    menjadi
+    
+    `<form action="{{ route('user.destroy', $hasil->id) }}" method="POST">`
+
+- Lalu pada UserController bagian destroy :
+
+    
+            public function destroy($id)
+            {
+                $user = User::find($id);
+                $user->delete();
+        
+                return redirect()->back()->with('success', 'Data User Berhasil Dihapus');
+            }

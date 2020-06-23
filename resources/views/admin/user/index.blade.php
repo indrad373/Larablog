@@ -19,7 +19,7 @@
     </div>
     @endif
 
-    <a href="{{ route('category.create') }}" class="btn btn-info">Tambah User</a>
+    <a href="{{ route('user.create') }}" class="btn btn-info">Tambah User</a>
     <br><br>
 
     <!-- table-sm membuat table yang ukuran height dan widthnya lebih kecil-->
@@ -49,11 +49,11 @@
                 </td>
                 <td>
                     <!-- Kenapa pake form disini ? karena kita akan langsung request ke database makanya pake form -->
-                    <form action="{{ route('category.destroy', $hasil->id) }}" method="POST">
+                    <form action="{{ route('user.destroy', $hasil->id) }}" method="POST">
                     @csrf
                     @method('delete')
                     <!-- btn-sm membuat button yang ukurannya lebih kecil-->
-                        <a href="{{ route('category.edit', $hasil->id) }}" class="btn btn-primary btn-sm">Edit</a>
+                        <a href="{{ route('user.edit', $hasil->id) }}" class="btn btn-primary btn-sm">Edit</a>
                         <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                     </form>
                 </td>
