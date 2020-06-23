@@ -7,6 +7,7 @@ use App\Posts;
 use App\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Auth;
 
 class PostController extends Controller
 {
@@ -68,7 +69,8 @@ class PostController extends Controller
             'category_id' => $request->category_id,
             'konten' => $request->konten,
             'gambar' => 'public/uploads/posts/'.$new_gambar,
-            'slug' => Str::slug($request->judul)
+            'slug' => Str::slug($request->judul),
+            'users_id' => Auth::id()
         ]);
 
         //attach tagnya buat penyimpanan muliple

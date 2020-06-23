@@ -25,19 +25,25 @@
 - kemudian untuk menampilkan datanya, pada file /admin/category/index.blade.php tambahkan :
     
     
-    `@foreach($category as $result)
-        <ul>
-            <li>
-                {{ $result->name }}
-            </li>
-        </ul>
-    @endforeach`
+            @foreach($category as $result)
+                <ul>
+                    <li>
+                        {{ $result->name }}
+                    </li>
+                </ul>
+            @endforeach
     
   maka data name akan ditampilkan
 
 - Edit /admin/category/index.blade.php
 
-- Pada CategoryController ubah $category = Category::all(); menjadi $category = Category::paginate(*isi nomor pagination*);
+- Pada CategoryController ubah 
+
+    `$category = Category::all();` 
+    
+    menjadi 
+    
+    `$category = Category::paginate(*isi nomor pagination*);`
 
 - Lalu pada /admin/category/index.blade.php, link pagination yang diambil dari controller {{ $category->links() }}
 
@@ -48,9 +54,9 @@
 - Lalu pada /admin/category/index.blade.php, tambah dibagian atas : 
 
 
-    `<a href="{{ route('category.create') }}" class="btn btn-info">Tambah Kategori</a>
+            <a href="{{ route('category.create') }}" class="btn btn-info">Tambah Kategori</a>
             <br><br>
-    <!-- category.create itu routenya -->`
+            `<!-- category.create itu routenya -->`
     
 
 - Lalu pada /admin/category/ buat file baru create.blade.php samakan isi import nya dengan index.blade.php, ganti sub-judulnya lalu tambahkan form
@@ -784,3 +790,86 @@
                 Route::resource('/tag', 'TagController');
                 Route::resource('/post', 'PostController');
             });
+
+------------------------------------------ ADD CREATOR POST -----------------------------------------------
+
+- pertama buat migration untuk menambahkan field user_id ke tabel post, diterminal ketik :
+
+  `php artisan make:migration tambah_field_user_ke_post`
+  
+- Kemudian copy dari migration softdelete ke tambah_field_user_ke_post :
+    
+    
+            Schema::table('posts', function (Blueprint $table) {
+                        //pake table bawaan softdelete dr laravel
+                        $table->integer('users_id');
+                    });
+                    
+- Lalu migrate, pada terminal ketikan :
+
+    `php artisan migrate`
+    
+- Pergi ke PostController lalu dibagian store kita tambahkan users_id nya :
+
+
+            $post = Posts::create([
+                        'judul' => $request->judul,
+                        'category_id' => $request->category_id,
+                        'konten' => $request->konten,
+                        'gambar' => 'public/uploads/posts/'.$new_gambar,
+                        'slug' => Str::slug($request->judul),
+                        'users_id' => Auth::id()
+                    ]);
+                    
+  Jangan lupa import Authnya : 
+    
+  `use Auth;`
+  
+- Kemudian pada model post jangan lupa ditambah juga dibagian fillable users_id nya :
+
+    
+            //buat fillablenya
+                protected $fillable = [
+                    'judul',
+                    'category_id',
+                    'konten',
+                    'gambar',
+                    'slug',
+                    'users_id',
+                ];
+
+- Lalu kita akan menampilkan user yang posting post tersebut, pada model post buat function baru dgn nama user :
+
+            
+            //buat function baru untuk tampilkan user yang posting post
+            //buat relasi dengan model user dengan belongsTo
+            public function users(){
+                return $this->belongsTo('App\User');
+            }   
+
+- Kemudian dibagian post/index.blade.php sebelah tags tambahkan suatu kolom untuk nama usernya :
+
+
+            `<tr>
+                        <th>No</th>
+                        <th>Nama Post</th>
+                        <th>Kategori</th>
+                        <th>Tag</th>
+                        <th>Creator</th>
+                        <th>Gambar</th>
+                        <th>Action</th>
+            </tr>`
+            
+  Kemudian
+  
+            `<td>{{ $hasil->users->name }}</td>`
+
+- Lalu kita akan mengubah sedikit tampilan dari tags nya, kita akan ubah sehingga tags nya memiliki badge
+- Pada post/index.blade.php kita ubah :
+
+     `<li>{{ $tag->name }}</li>`
+     
+     menjadi 
+     
+     `<h6><span class="badge badge-primary">{{ $tag->name }}</span></h6>`
+

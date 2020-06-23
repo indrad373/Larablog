@@ -30,6 +30,7 @@
             <th>Nama Post</th>
             <th>Kategori</th>
             <th>Tag</th>
+            <th>Creator</th>
             <th>Gambar</th>
             <th>Action</th>
         </tr>
@@ -43,10 +44,12 @@
                 <td>
                     @foreach($hasil->tags as $tag)
                         <ul>
-                            <li>{{ $tag->name }}</li>
+                            <!-- badge tags view -->
+                            <h6><span class="badge badge-primary">{{ $tag->name }}</span></h6>
                         </ul>
                     @endforeach
                 </td>
+                <td>{{ $hasil->users->name }}</td>
                 <td><img src="{{ asset($hasil->gambar) }}" class="img-fluid" style="width: 100px"></td>
                 <td>
                     <!-- Kenapa pake form disini ? karena kita akan langsung request ke database makanya pake form -->

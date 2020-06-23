@@ -17,6 +17,7 @@ class Posts extends Model
         'konten',
         'gambar',
         'slug',
+        'users_id',
     ];
 
     //buat eloquent relationship dengan model category
@@ -27,5 +28,11 @@ class Posts extends Model
     //buat eloquent many to many ke model tag nya
     public function tags(){
         return $this->belongsToMany('App\Tag');
+    }
+
+    //buat function baru untuk tampilkan user yang posting post
+    //buat relasi dengan model user dengan belongsTo
+    public function users(){
+        return $this->belongsTo('App\User');
     }
 }
