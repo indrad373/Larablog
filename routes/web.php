@@ -16,9 +16,12 @@ use Illuminate\Support\Facades\Route;
 //posisinya hrs paling atas
 Auth::routes();
 
-Route::get('/', function () {
-    return view('welcome');
-});
+//Route::get('/', function () {
+//    return view('blog');
+//});
+
+Route::get('/', 'BlogController@index');
+
 
 /*
     Route::get('/home', function () {

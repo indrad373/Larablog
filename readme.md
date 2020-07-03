@@ -1075,3 +1075,76 @@
         
                 return redirect()->back()->with('success', 'Data User Berhasil Dihapus');
             }
+
+----------------------------------------- Main ke Frontend --------------------------------------
+
+- Buka route Web.php kemudian ubah :
+
+
+            Route::get('/', function () {
+                 return view('welcome');
+            });
+            
+  Menjadi
+  
+            Route::get('/', function () {
+                 return view('blog');
+            });
+
+- Lalu edit2 dah itu template, buat folder baru buat tampung templatenya, disini saya pakai calli (kemudian buat foldernya masukan css, font, img, dan js nya ke dalam folder itu)
+
+- Lalu buat sebuah blog controller :
+
+    `php artisan make:controller BlogController`
+    
+- kemudian dalam BlogController kita import si model post tersebut :
+
+    `use App/Posts;`
+    
+- Kemudian buat sebuah function baru :
+
+
+            public function index(Posts $posts){
+                //buat sebuah var data yg menampung post
+                $data = $posts->orderBy('created_at', 'desc')->get();
+                return view('blog', compact('data'));
+            }
+
+- Kemudian dalam web.php hapus :
+
+
+            Route::get('/', function () {
+                return view('blog');
+            });
+            
+  Ubah menjadi
+  
+            Route::get('/', 'BlogController@index');
+            
+- Lalu kita akan mengirimkan data kita kedalam blog.blade.php, hapus section2 yg tidak dibutuhkan
+
+- Kemudian tambahkan syntax for each pada blog.blade.php
+
+- Jika sudah jadi kurang lebih begini :
+
+
+                        @foreach($data as $post_terbaru)
+                        <div class="col-md-6">
+                            <div class="post">
+                                <a class="post-img" href="#"><img src="{{ $post_terbaru->gambar }}" alt=""></a>
+                                <div class="post-body">
+                                    <div class="post-category">
+                                        <!-- disini post sama category melakukan join (lihat dlm Post.php) -->
+                                        <a href="#">{{ $post_terbaru->category->name }}</a>
+                                    </div>
+                                    <h3 class="post-title"><a href="#">{{ $post_terbaru->judul }}</a></h3>
+                                    <ul class="post-meta">
+                                        <li><a href="#">{{ $post_terbaru->users->name }}</a></li>
+                                        <!-- <li>{{ $post_terbaru->created_at }}</li> -->
+                                        <!-- kita pake function carbon (alternatif pertanggalan) -->
+                                        <li>{{ $post_terbaru->created_at->diffForHumans() }}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        @endforeach
