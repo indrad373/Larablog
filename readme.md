@@ -1131,7 +1131,7 @@
                         @foreach($data as $post_terbaru)
                         <div class="col-md-6">
                             <div class="post">
-                                <a class="post-img" href="#"><img src="{{ $post_terbaru->gambar }}" alt=""></a>
+                                <a class="post-img" href="#"><img src="{{ $post_terbaru->gambar }}" alt="" style="height: 200px"></a>
                                 <div class="post-body">
                                     <div class="post-category">
                                         <!-- disini post sama category melakukan join (lihat dlm Post.php) -->
@@ -1148,3 +1148,42 @@
                             </div>
                         </div>
                         @endforeach
+
+- Kita akan membagi tampilann template blog nya menjadi beberapa komponen view, buat folder baru dengan nama :
+
+    `template_blog`
+    
+- Lalu buat file baru :
+
+    `head.blade.php`
+    `widget.blade.php`
+    `footer.blade.php`
+    
+- Lalu buat folder baru bernama blog
+
+- Kemudian buat file dalam folder blog yang bernama isi_post.blade.php
+
+- Lalu pada web.php tulis, untuk test, setelah itu comment saja jika sudah berhasil:
+    
+    
+            Route::get('/isi_post', function (){
+                return view('blog.isi_post');
+            });
+
+- Lalu kita akan menggunakan slug yang telah kita buat untuk seo, pada web.php ketik :
+
+    `Route::get('/isi_post/{slug}', 'BlogController@isi_blog')->name('blog.isi');`
+    
+- Lalu pada blog controller buat function isi_blog :
+
+
+            public function isi_blog($slug){
+                $data = Posts::where('slug', $slug)->get();
+                return view('blog.isi_post', compact('data'));
+            }
+
+- Pada blog.blade.php pada bagian `<a href>` berikan sebuah url dinamis yg mengarahkan ke route isi blog :
+
+    ` <a class="post-img" href="{{ route('blog.isi', $post_terbaru->slug) }}"><img src="{{ $post_terbaru->gambar }}" alt="" style="height: 200px"></a>`
+    
+- Pada isi_post.blade.php modif2 edit2 htmlnya
