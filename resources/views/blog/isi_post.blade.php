@@ -5,10 +5,10 @@
     @foreach($data as $isi_post)
 
         <div id="post-header" class="page-header">
-            <div class="page-header-bg" style="
-                background-image: url( {{asset($isi_post->gambar) }} );"
+            <div class="page-header-bg"
+                 style="background-image: url( {{asset($isi_post->gambar) }} );"
 
-                 data-stellar-background-ratio="0.5"></div>
+                 data-stellar-background-ratio="2"></div>
             <div class="container">
                 <div class="row">
                     <div class="col-md-10">
@@ -31,9 +31,7 @@
         <div class="col-md-8 hot-post-left">
             <br>
             <div class="section-row">
-
-
-
+                {{-- !! untuk ck editor biar berjalan sesuai dengan kata2 biasa (menghilangkan tag htmlnya --}}
                 {!! $isi_post->konten !!}
 
             </div>

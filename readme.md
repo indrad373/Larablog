@@ -1187,3 +1187,18 @@
     ` <a class="post-img" href="{{ route('blog.isi', $post_terbaru->slug) }}"><img src="{{ $post_terbaru->gambar }}" alt="" style="height: 200px"></a>`
     
 - Pada isi_post.blade.php modif2 edit2 htmlnya
+
+---------------------------------------- Tambah CK Editor -----------------------------------
+
+- copy script ini pada post/create.blade.php
+
+
+            <script src="https://cdn.ckeditor.com/4.14.1/standard/ckeditor.js"></script>
+            <script>
+                CKEDITOR.replace( 'konten' );
+            </script>
+
+   lalu tambahkan id="konten"
+   
+    `<textarea class="form-control" name="konten" id="konten"></textarea>
+    
