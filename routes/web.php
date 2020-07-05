@@ -29,6 +29,8 @@ Route::get('/', 'BlogController@index');
 
 Route::get('/isi_post/{slug}', 'BlogController@isi_blog')->name('blog.isi');
 
+Route::get('/list-post','BlogController@list_blog')->name('blog.list');
+
 /*
     Route::get('/home', function () {
     return view('home');

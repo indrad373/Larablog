@@ -13,4 +13,9 @@ class Category extends Model
     //karna penamaan categorynya ga sesuai standar maka
     //definisikn nama tabel yang kita punya di mysql
     protected $table = 'category';
+
+    //membuat relasi dengan table post
+    public function posts(){
+        return $this->hasMany('App\Posts');
+    }
 }

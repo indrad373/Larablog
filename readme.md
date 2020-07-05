@@ -1200,5 +1200,126 @@
 
    lalu tambahkan id="konten"
    
-    `<textarea class="form-control" name="konten" id="konten"></textarea>
+    `<textarea class="form-control" name="konten" id="konten"></textarea>`
     
+--------------------------------------- List Category part 1 -----------------------------------
+
+- Pada BlogController kita akan mengubah orderBy menjadi latest untuk mendapatkan post dengan urutan terbaru
+
+
+            public function index(Posts $posts){
+                //buat sebuah var data yg menampung post
+                $data = $posts->latest()->take(8)->get();
+                return view('blog', compact('data'));
+            }
+            
+- pada folder blog buat file list_post.blade.php
+
+- Lalu pada web.php buat route baru :
+    
+    `Route::get('/list-post', 'BlogController@list-blog')->name('blog.list');`
+    
+- Lalu pada BlogController tambahkan fungsi list_post :
+
+
+            public function list_blog(){
+                $data = Posts::latest()->paginate(6);
+                return view('blog.list_post');
+            }        
+            
+- Pada nav bar nya tambahkan menu list post :
+
+    `<li><a href="{{ route('blog.list') }}">List Post</a></li>` 
+            
+- pada list_post :
+
+
+            @extends('template_blog.content')
+            @section('isi')
+            <!-- post -->
+            <div class="col-md-8 hot-post-left">
+                @foreach($data as $list_post)
+            <div class="post post-row">
+                <a class="post-img" href="{{ route('blog.isi', $list_post->slug) }}"><img src="{{ asset($list_post->gambar) }}" alt="{{ $list_post->judul }}"></a>
+                <div class="post-body">
+                    <div class="post-category">
+                        <a href="#">{{ $list_post->category->name }}</a>
+                    </div>
+                    <h3 class="post-title"><a href="{{ route('blog.isi', $list_post->slug) }}">{{ $list_post->judul }}</a></h3>
+                    <ul class="post-meta">
+                        <li><a href="#">{{ $list_post->users->name }}</a></li>
+                        <li>{{ $list_post->created_at }}</li>
+                    </ul>
+                    <p>{!! mb_strimwidth($list_post->konten,0,160) !!} ...</p>
+                </div>
+            </div>
+            @endforeach
+            <!-- /post -->
+            <center>{{ $data->links() }}</center>
+            </div>
+            
+            <!-- /post -->
+            @endsection
+
+- Pada BlogController ubah menjadi seperti ini untuk mendapatkan data dari category
+
+
+            public function index(Posts $posts){
+                //buat menampung category
+                $category = Category::all();
+                //buat sebuah var data yg menampung post
+                $data = $posts->latest()->take(8)->get();
+                return view('blog', compact('data','category'));
+            }
+        
+            public function isi_blog($slug){
+                //buat menampung category
+                $category = Category::all();
+                $data = Posts::where('slug', $slug)->get();
+                return view('blog.isi_post', compact('data','category'));
+            }
+        
+            public function list_blog(){
+                //buat menampung category
+                $category = Category::all();
+                $data = Posts::latest()->paginate(6);
+                return view('blog.list_post', compact('data','category'));
+            }
+
+- kemudian pada category.php tambah function baru untuk membuat relasi dengan tabel post:
+
+
+            //membuat relasi dengan table post
+            public function posts(){
+                return $this->hasMany('App\Posts');
+            }   
+
+- Pada widget.blade.php bagian category tambahkan foreach :
+
+
+             @foreach($category as $hasil)
+                <li><a href="#">{{ $hasil->name }}<span>{{ $hasil->posts->count() }}</span></a></li>
+             @endforeach
+
+- Pada head.blade.php tambah juga foreach dibagian kategori dan footer:
+
+
+             <li class="has-dropdown">
+                 <a href="#">Kategori</a>
+                 <div class="dropdown">
+                     <div class="dropdown-body">
+                         <ul class="dropdown-list">
+                             @foreach($category as $result)
+                                 <li><a href="#">{{ $result->name }}</a></li>
+                             @endforeach
+                         </ul>
+                     </div>
+                 </div>
+             </li>
+
+untuk footer :
+    
+    
+             @foreach($category as $hasil)
+                <li><a href="#">{{ $hasil->name }}<span>{{ $hasil->posts->count() }}</span></a></li>
+             @endforeach
